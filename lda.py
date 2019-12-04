@@ -84,7 +84,7 @@ def remove_dup(text):
         r.append(token)
     return r
 
-
+################ FILE IO #########################################
 File = open('nytimes_news_articles.txt', encoding='utf-8').read()
 docs = File.split("URL")[:2000]
 docs = [transformText(s.split("\n",1)[1]) for s in docs if (len(s.split("\n",1))>1)]
@@ -99,6 +99,8 @@ docs = ["Human machine interface for lab abc computer applications",
               "Graph minors IV Widths of trees and well quasi ordering",
               "Graph minors A survey"]
 '''
+
+######################## TEXT PREPROCESSING ############################
 tokens = reduce_vocab([remove_dup(s.split()) for s in docs])
 dictionary = gensim.corpora.Dictionary(tokens)
 doc_idx = [np.array(dictionary.doc2idx(i)) for i in tokens]
@@ -107,6 +109,8 @@ D = len(docs)
 K = 40
 print(V,D,K)
 
+
+################ LDA Hyperparams ########################
 eta = 0.01
 eta_arr = eta*np.array([1 for i in range(V)])
 alpha = 1/K
@@ -116,6 +120,8 @@ epochs     = 1001
 lambda_n = np.random.dirichlet(eta_arr, K)
 x_plot = []
 nlp_plot = []
+
+########################### SVI iterative updates ######################
 for epoch in range(epochs):
     print("Epoch : ", epoch)
     lambda_g = np.zeros(lambda_n.shape)
@@ -143,6 +149,8 @@ for epoch in range(epochs):
     lambda_n = lambda_n*(1-rho) + lambda_g*rho
 
 
+
+################ Output final result ##########################
 
 ct = 0
 for i in lambda_n:
